@@ -1,0 +1,26 @@
+# Name of the workflow as it appears in the Actions tab
+name: Hello World
+
+# Specifies when the workflow should run
+on:
+  # Triggers the workflow on push events to any branch
+  push:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Defines a series of jobs to run
+jobs:
+  # The ID for the job, in this case, 'my-job'
+  my-job:
+    # Specifies the type of virtual machine to run the job on
+    runs-on: ubuntu-latest
+
+    # The steps for the job
+    steps:
+      # Step 1: Prints a message to the console
+      - name: My first step
+        run: echo "Hello World!"
+
+      # Step 2: Prints a second message
+      - name: My second step
+        run: echo "This is my simple GitHub Action."
