@@ -27,10 +27,16 @@ jobs:
         
       #step 3: Trigger API JOB
       - name: Trigger API job
-        run: job_id=$( curl -s -X POST "https://staging.uipath.com/identity_/connect/token" -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=d383cef4-9b76-4e8d-b814-153a79082402&client_secret=FaW8~AHbCVHKXY1?EwFHqKfvh(863FC~)^^JjQH$B9!beq#CY9^m)7x1#?tafGtT&scope=TM.Default" -d '{"param1":"value"}' | jq -r '.jobId') echo "job_id=$job_id" >> $GITHUB_OUTPUT
-
-    #step 4: Get Token
-      - name: Use the output variable
         run: |
-          echo "The output from the previous step is: ${{ steps.set_output_step.outputs.my_output_key }}"
-  
+          echo "Requesting Bearer Token ...."
+          response=$( curl -s -X POST "https://staging.uipath.com/identity_/connect/token" -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=d383cef4-9b76-4e8d-b814-153a79082402&client_secret=FaW8~AHbCVHKXY1?EwFHqKfvh(863FC~)^^JjQH$B9!beq#CY9^m)7x1#?tafGtT&scope=TM.Default" -d '{"param1":"value"}' | jq -r '.jobId') echo "job_id=$job_id" >> $GITHUB_OUTPUT
+
+          echo "Response: $response"
+          token=$(echo "$response" | jq -r '.access_token')
+          if [ "$token" = "null" ] || [ -z "$token" ]; then
+           echo "Failed to get bearer token"
+          exit 1
+          fi
+        
+
+
