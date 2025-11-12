@@ -56,79 +56,35 @@ jobs:
             --data-urlencode "client_id=$UIPATH_CLIENT_ID" \
             --data-urlencode "client_secret=$UIPATH_CLIENT_SECRET" \
             --data-urlencode "scope=TM.Default")
-
-          echo "Response: $response"
+            
           token=$(echo "$response" | jq -r '.access_token')
-          if [ "$token" = "null" ] || [ -z "$token" ]; then
-           echo "Failed to get bearer token"
-          exit 1
-          fi
-          echo "token=$token"
-
-          echo "token=$token" >> $GITHUB_OUTPUT
-          if [ -z "$token" ]; then
-            echo "❌ Token is empty"
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "Failed to get bearer token"
             exit 1
           fi
-          echo "$GITHUB_OUTPUT"
-          echo "End step 4"
+      
+          echo "token=$token" >> $GITHUB_OUTPUT
 
       # Step 5 Execute Test Set from UiPath Test manager
-      - name: Trigger_Test_Set_Execution
+      - name: Trigger Test Set Execution
+        id: trigger_test
         run: |
-          echo "Starting Test Set Exectuion " 
           TOKEN="${{ steps.get_token.outputs.token }}"
-          echo "Authorization: Bearer $TOKEN"
-          
-          if [ -z "$TOKEN" ]; then
-            echo "❌ Token is empty"
-            exit 1
-          fi
-          
-          echo "${{ steps.get_token.outputs.token }}"
-          
-          response=$(curl -v -s -X POST \
+          echo "Triggering Test Set Execution..."
+      
+          response=$(curl -s -X POST \
             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testsets/c8b74974-29d3-0200-f250-0b48e6bbdcbc/startexecute?executionType=automated" \
             -H "accept: application/json" \
-            -H "Authorization: Bearer  $TOKEN}")
-
-          echo "Response: $response"
-          
-          # Extract execution ID
+            -H "Authorization: Bearer $TOKEN")
+      
           execution_id=$(echo "$response" | jq -r '.id')
-          if [ "$execution_id" = "null" ] || [ -z "$execution_id" ]; then
-           echo "Failed to start execution"
-          exit 1
+          if [ -z "$execution_id" ] || [ "$execution_id" = "null" ]; then
+            echo "Failed to start test set execution"
+            exit 1
           fi
-          
-          # Set output for later steps
+      
           echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
           
-      # Step 6 Wait for Test Execution to Complete
-      - name: Wait for Test Execution to Complete
-        run: |
-          echo "⏳ Waiting for test execution to finish..."
-          executionId="steps.Trigger_Test_Set_Execution.execution_id"
-      
-          for i in {1..30}; do
-            status=$(curl -s -X GET \
-              "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/testexecutions/$executionId" \
-              -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" \
-              | jq -r '.status')
-      
-            echo "Current status: $status"
-      
-            if [ "$status" = "Completed" ]; then
-              echo "✅ Test execution completed successfully!"
-              break
-            fi
-      
-            if [ "$status" = "Failed" ]; then
-              echo "❌ Test execution failed!"
-              exit 1
-            fi
-      
-            sleep 10
-          done
+    
             
 
