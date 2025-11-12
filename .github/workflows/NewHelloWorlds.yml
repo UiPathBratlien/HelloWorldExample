@@ -47,24 +47,23 @@ jobs:
       - name: get_token  
         id: get_token
         run: |
-          echo "Requesting Bearer Token ..."
-          response=$(curl -v -s -X POST "https://staging.uipath.com/identity/connect/token" \
+          echo "🔐 Requesting bearer token..."
+          response=$(curl -s -X POST "https://staging.uipath.com/identity_/connect/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            --data-urlencode "grant_type=client_credentials" \
-            --data-urlencode "client_id=${{ secrets.UIPATH_CLIENT_ID }}" \
-            --data-urlencode "client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}" \
-            --data-urlencode "scope=TM.Default")
-      
+            -d "grant_type=client_credentials&client_id=${{ secrets.UIPATH_CLIENT_ID }}&client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}&scope=${{ secrets.UIPATH_SCOPE }}")
+
+          echo "Response: $response"
+
+          # Parse token using jq
           token=$(echo "$response" | jq -r '.access_token')
-          echo "token=$token"
-      
-          if [ -z "$token" ] || [ "$token" = "null" ]; then
+
+          if [ "$token" = "null" ] || [ -z "$token" ]; then
             echo "❌ Failed to get bearer token"
             exit 1
           fi
-      
+
+          # Set token as output for next steps
           echo "token=$token" >> $GITHUB_OUTPUT
-          echo "end Step 4"
 
       # Step 5 Execute Test Set from UiPath Test manager
       - name: Trigger Test Set Execution
