@@ -30,9 +30,11 @@ jobs:
         env: 
           My_client_id: "d383cef4-9b76-4e8d-b814-153a79082402"
           My_client_secret: "d383cef4-9b76-4e8d-b814-153a79082402&client_secret=FaW8~AHbCVHKXY1?EwFHqKfvh(863FC~)^^JjQH$B9!beq#CY9^m)7x1#?tafGtT"
+          My_variable: "d383cef4-9b76-4e8d-b814-153a79082402"
         run: |
           echo "Requesting Bearer Token .... using client_id=${{secrets.My_client_id}}&client_secret=${{secrets.My_client_secret}}" 
           echo "client id is ${{secrets.My_client_secret}}"
+          echo My_variable
           response=$(curl -X POST "https://staging.uipath.com/identity_/connect/token" -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=${{secrets.My_client_id}}&client_secret=${{secrets.My_client_secret}}&scope=TM.Default" )
 
           echo "Response: $response"
