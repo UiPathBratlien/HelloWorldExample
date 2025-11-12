@@ -64,6 +64,8 @@ jobs:
       
           echo "token=$token" >> $GITHUB_OUTPUT
 
+          echo "end Step 4"
+
       # Step 5 Execute Test Set from UiPath Test manager
       - name: Trigger Test Set Execution
         run: |
