@@ -50,7 +50,7 @@ jobs:
           echo "🔐 Requesting bearer token..."
           response=$(curl -s -X POST "https://staging.uipath.com/identity_/connect/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "grant_type=client_credentials&client_id=${{ secrets.UIPATH_CLIENT_ID }}&client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}&scope=${{ secrets.UIPATH_SCOPE }}")
+            -d "grant_type=client_credentials&client_id=${{ secrets.UIPATH_CLIENT_ID }}&client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}&scope=TM.Default")
 
           echo "Response: $response"
 
