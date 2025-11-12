@@ -71,20 +71,18 @@ jobs:
         run: |
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Triggering Test Set Execution..."
-      
+          
           response=$(curl -s -X POST \
             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testsets/c8b74974-29d3-0200-f250-0b48e6bbdcbc/startexecute?executionType=automated" \
             -H "accept: application/json" \
             -H "Authorization: Bearer $TOKEN")
-      
+          
+          echo "Response: $response"
+          
           execution_id=$(echo "$response" | jq -r '.id')
           if [ -z "$execution_id" ] || [ "$execution_id" = "null" ]; then
             echo "Failed to start test set execution"
             exit 1
           fi
-      
-          echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
           
-    
-            
-
+          echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
