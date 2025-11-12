@@ -110,7 +110,7 @@ jobs:
           # Max wait = 30 min (60 checks * 30s)
           for i in {1..60}; do
             status_response=$(curl -s -X GET \
-             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testexecutions/72d39c1a-6865-0500-dbe0-0b48eeb4eee0/withstats" \
+             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testexecutions/$EXECUTION_ID/withstats" \
               -H "accept: application/json" \
               -H "Authorization: Bearer $TOKEN")
 
