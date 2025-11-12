@@ -44,7 +44,8 @@ jobs:
           echo "✅ Secrets detected (lengths hidden for security)"
         
       #step 4: get_token
-      - name: get_token        
+      - name: get_token  
+        id: get_token
         run: |
           echo "client_id=${{ secrets.UIPATH_CLIENT_ID }}"
           echo "client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}" 
