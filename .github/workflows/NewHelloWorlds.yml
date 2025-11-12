@@ -33,8 +33,8 @@ jobs:
       - name: Trigger API job        
         run: |
           echo "Requesting Bearer Token .... using client_id=${{secrets.My_client_id}}&client_secret=${{secrets.My_client_secret}}" 
-          echo "client id is ${{secrets.My_client_secret}}"
-          echo $My_variable
+          echo "client id is ${{My_client_secret}}"
+          echo "$My_variable"
           response=$(curl -X POST "https://staging.uipath.com/identity_/connect/token" -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=${{secrets.My_client_id}}&client_secret=${{secrets.My_client_secret}}&scope=TM.Default" )
 
           echo "Response: $response"
