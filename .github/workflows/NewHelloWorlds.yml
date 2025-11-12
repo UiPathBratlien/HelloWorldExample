@@ -77,12 +77,15 @@ jobs:
       - name: Trigger_Test_Set_Execution
         run: |
           echo "Starting Test Set Exectuion " 
+          echo "Authorization: Bearer "
           echo "Authorization: Bearer ${{ steps.get_token.outputs.token }}"
 
           if [ -z "${{ steps.get_token.outputs.token }}" ]; then
             echo "❌ Token is empty"
             exit 1
           fi
+          
+          echo "${{ steps.get_token.outputs.token }}"
           
           response=$(curl -v -s -X POST \
             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testsets/c8b74974-29d3-0200-f250-0b48e6bbdcbc/startexecute?executionType=automated" \
