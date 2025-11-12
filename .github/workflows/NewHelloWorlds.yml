@@ -97,3 +97,37 @@ jobs:
           fi
           
           echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
+          echo "execution_id=$execution_id"
+
+      # Step 6 Wait For Test Execution to complete 
+      - name: ⏱️ Wait for Test Execution to Complete
+        env:
+          TOKEN: ${{ steps.get_token.outputs.token }}
+          EXECUTION_ID: ${{ steps.start_execution.outputs.execution_id }}
+        run: |
+          echo "Waiting for test execution $EXECUTION_ID to complete..."
+
+          # Max wait = 30 min (60 checks * 30s)
+          for i in {1..60}; do
+            status_response=$(curl -s -X GET \
+             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testexecutions?testsetId=c8b74974-29d3-0200-f250-0b48e6bbdcbc&top=1" \
+              -H "accept: application/json" \
+              -H "Authorization: Bearer $TOKEN")
+
+            status=$(echo "$status_response" | jq -r '.status')
+            echo "Status check #$i → $status"
+
+            if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Stopped" ]]; then
+              echo "✅ Execution finished with status: $status"
+              echo "final_status=$status" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            echo "⏳ Still running... waiting 30s before next check"
+            sleep 30
+          done
+
+          echo "❌ Timed out waiting for test execution"
+          exit 1
+
+        
