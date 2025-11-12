@@ -115,7 +115,7 @@ jobs:
               -H "Authorization: Bearer $TOKEN")
 
             echo "$status_response" 
-            status=$(echo "$status_response" | jq -r '.status')
+            status=$(echo "$status_response" | jq -r '.data[0].status')
             echo "Status check #$i → $status"
 
             if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Stopped" ]]; then
