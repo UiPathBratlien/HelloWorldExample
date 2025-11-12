@@ -69,6 +69,7 @@ jobs:
         run: |
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Triggering Test Set Execution..."
+          echo "TOKEN LENGTH: ${#TOKEN}"
           
           response=$(curl -s -X POST \
             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testsets/c8b74974-29d3-0200-f250-0b48e6bbdcbc/startexecute?executionType=automated" \
