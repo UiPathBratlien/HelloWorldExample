@@ -48,7 +48,7 @@ jobs:
         id: get_token
         run: |
           echo "Requesting Bearer Token ..."
-          response=$(curl -v -s -X POST "https://staging.uipath.com/identity_/connect/token" \
+          response=$(curl -v -s -X POST "https://staging.uipath.com/identity/connect/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data-urlencode "grant_type=client_credentials" \
             --data-urlencode "client_id=${{ secrets.UIPATH_CLIENT_ID }}" \
