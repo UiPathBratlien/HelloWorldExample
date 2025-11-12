@@ -79,8 +79,8 @@ jobs:
           echo "Starting Test Set Exectuion " 
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Authorization: Bearer $TOKEN"
-
-          if [ -z "${{ steps.get_token.outputs.token }}" ]; then
+          
+          if [ -z "$TOKEN" ]; then
             echo "❌ Token is empty"
             exit 1
           fi
