@@ -110,16 +110,20 @@ jobs:
           # Max wait = 30 min (60 checks * 30s)
           for i in {1..60}; do
             status_response=$(curl -s -X GET \
-             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testexecutions?testsetId=c8b74974-29d3-0200-f250-0b48e6bbdcbc&top=1" \
+             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testexecutions/72d39c1a-6865-0500-dbe0-0b48eeb4eee0/withstats" \
               -H "accept: application/json" \
               -H "Authorization: Bearer $TOKEN")
 
             echo "$status_response" 
-            status=$(echo "$status_response" | jq -r '.data[0].status')
+            status=$(echo "$status_response" | jq -r '.status')
             echo "Status check #$i → $status"
 
-            if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Stopped" ]]; then
+            if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Finished" ]]; then
               echo "✅ Execution finished with status: $status"
+              PassedTC=$(echo "$status_response" | jq -r '.passed')
+              FailedTC=$(echo "$status_response" | jq -r '.failed')
+              echo "✅ Execution has $PassedTC Passed Test Cases"
+              echo "❌ Execution has $FailedTC Failed Test Cases"
               echo "final_status=$status" >> $GITHUB_OUTPUT
               exit 0
             fi
