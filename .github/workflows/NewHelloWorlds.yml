@@ -64,7 +64,7 @@ jobs:
           fi
 
       # Step 5 Execute Test Set from UiPath Test manager
-      - name: Trigger Test Set Execution
+      - name: Trigger_Test_Set_Execution
         run: |
           echo "Starting Test Set Exectuion " 
           curl -s -X POST \
@@ -74,4 +74,40 @@ jobs:
           -H "X-XSRF-TOKEN: ${{ secrets.UIPATH_XSRF_TOKEN }}" \
           -d ''
 
+          echo "Response: $response"
+          
+          # Extract execution ID
+          execution_id=$(echo "$response" | jq -r '.id')
+          echo "Execution ID: $execution_id"
+          
+          # Set output for later steps
+          echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
+          
+      # Step 6 Wait for Test Execution to Complete
+      - name: Wait for Test Execution to Complete
+        run: |
+          echo "⏳ Waiting for test execution to finish..."
+          executionId="steps.Trigger_Test_Set_Execution.execution_id"
+      
+          for i in {1..30}; do
+            status=$(curl -s -X GET \
+              "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/testexecutions/$executionId" \
+              -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" \
+              | jq -r '.status')
+      
+            echo "Current status: $status"
+      
+            if [ "$status" = "Completed" ]; then
+              echo "✅ Test execution completed successfully!"
+              break
+            fi
+      
+            if [ "$status" = "Failed" ]; then
+              echo "❌ Test execution failed!"
+              exit 1
+            fi
+      
+            sleep 10
+          done
+            
 
