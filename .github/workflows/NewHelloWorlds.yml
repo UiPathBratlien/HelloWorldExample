@@ -73,9 +73,12 @@ jobs:
 
       # Step 5 Execute Test Set from UiPath Test manager
       - name: Trigger Test Set Execution
+        id: Trigger_TS_Exec
+        UIPATH_TOKEN: ${{ steps.get_token.outputs.token }}
         run: |
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Triggering Test Set Execution..."
+          echo "Using token: ${UIPATH_TOKEN:0:20}..." # shows only first 20 chars (for debug)
           echo "TOKEN LENGTH: ${#TOKEN}"
           
           response=$(curl -s -X POST \
