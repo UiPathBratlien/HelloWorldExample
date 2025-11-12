@@ -114,6 +114,7 @@ jobs:
               -H "accept: application/json" \
               -H "Authorization: Bearer $TOKEN")
 
+            echo "$status_response" 
             status=$(echo "$status_response" | jq -r '.status')
             echo "Status check #$i → $status"
 
