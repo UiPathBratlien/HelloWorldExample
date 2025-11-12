@@ -74,7 +74,8 @@ jobs:
       # Step 5 Execute Test Set from UiPath Test manager
       - name: Trigger Test Set Execution
         id: Trigger_TS_Exec
-        UIPATH_TOKEN: ${{ steps.get_token.outputs.token }}
+        env: 
+          UIPATH_TOKEN: ${{ steps.get_token.outputs.token }}
         run: |
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Triggering Test Set Execution..."
