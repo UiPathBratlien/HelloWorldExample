@@ -24,8 +24,22 @@ jobs:
       # Step 2: Prints a second message
       - name: My second step
         run: echo "This is my simple GitHub Action."
+      #Step 3: Debug  
+      - name: Debug secret presence
+        run: |
+          if [ -z "${{ secrets.UIPATH_CLIENT_ID }}" ]; then
+            echo "❌ UIPATH_CLIENT_ID is empty"
+          exit 1
+          fi
+
+          if [ -z "${{ secrets.UIPATH_CLIENT_SECRET }}" ]; then
+            echo "❌ UIPATH_CLIENT_SECRET is empty"
+            exit 1
+          fi
+
+          echo "✅ Secrets detected (lengths hidden for security)"
         
-      #step 3: Trigger API JOB
+      #step 4: Trigger API JOB
       - name: Trigger API job        
         run: |
           echo "client_id=${{ secrets.UIPATH_CLIENT_ID }}"
