@@ -70,12 +70,7 @@ jobs:
             echo "❌ Token is empty"
             exit 1
           fi
-
-          if [ -z "${{ steps.get_token.outputs.token }}" ]; then
-            echo "❌ GITHUB_OUTPUT is empty"
-            exit 1
-          fi
-
+          echo "$GITHUB_OUTPUT"
           echo "End step 4"
 
       # Step 5 Execute Test Set from UiPath Test manager
