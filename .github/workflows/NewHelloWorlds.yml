@@ -47,19 +47,18 @@ jobs:
       - name: get_token  
         id: get_token
         run: |
-          echo "client_id=${{ secrets.UIPATH_CLIENT_ID }}"
-          echo "client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}" 
-          echo "Requesting Bearer Token .... "
+          echo "Requesting Bearer Token ..."
           response=$(curl -s -X POST "https://staging.uipath.com/identity_/connect/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data-urlencode "grant_type=client_credentials" \
-            --data-urlencode "client_id=$UIPATH_CLIENT_ID" \
-            --data-urlencode "client_secret=$UIPATH_CLIENT_SECRET" \
+            --data-urlencode "client_id=${{ secrets.UIPATH_CLIENT_ID }}" \
+            --data-urlencode "client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}" \
             --data-urlencode "scope=TM.Default")
-            
+      
           token=$(echo "$response" | jq -r '.access_token')
+      
           if [ -z "$token" ] || [ "$token" = "null" ]; then
-            echo "Failed to get bearer token"
+            echo "❌ Failed to get bearer token"
             exit 1
           fi
       
@@ -67,7 +66,6 @@ jobs:
 
       # Step 5 Execute Test Set from UiPath Test manager
       - name: Trigger Test Set Execution
-        id: trigger_test
         run: |
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Triggering Test Set Execution..."
@@ -81,7 +79,7 @@ jobs:
           
           execution_id=$(echo "$response" | jq -r '.id')
           if [ -z "$execution_id" ] || [ "$execution_id" = "null" ]; then
-            echo "Failed to start test set execution"
+            echo "❌ Failed to start test set execution"
             exit 1
           fi
           
