@@ -62,8 +62,6 @@ jobs:
            echo "Failed to get bearer token"
           exit 1
           fi
-
-         # Set as step output
           echo "token=$token" >> $GITHUB_OUTPUT
 
       # Step 5 Execute Test Set from UiPath Test manager
