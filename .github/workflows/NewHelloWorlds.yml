@@ -14,6 +14,9 @@ jobs:
   my-job:
     # Specifies the type of virtual machine to run the job on
     runs-on: ubuntu-latest
+    env:
+      UIPATH_CLIENT_ID: ${{ secrets.UIPATH_CLIENT_ID }}
+      UIPATH_CLIENT_SECRET: ${{ secrets.UIPATH_CLIENT_SECRET }}
 
     # The steps for the job
     steps:
@@ -24,7 +27,8 @@ jobs:
       # Step 2: Prints a second message
       - name: My second step
         run: echo "This is my simple GitHub Action."
-      #Step 3: Debug  
+      
+      # Step 3: Debug  
       - name: Debug secret presence
         run: |
           if [ -z "${{ secrets.UIPATH_CLIENT_ID }}" ]; then
@@ -44,8 +48,13 @@ jobs:
         run: |
           echo "client_id=${{ secrets.UIPATH_CLIENT_ID }}"
           echo "client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}" 
-          echo "Requesting Bearer Token .... " 
-          response=$(curl -v -X POST "https://staging.uipath.com/identity_/connect/token" -H "Content-Type:application/x-www-form-urlencoded" --data-urlencode "grant_type=client_credentials&client_id=${{ secrets.UIPATH_CLIENT_ID }}&client_secret=${{ secrets.UIPATH_CLIENT_SECRET }}&scope=TM.Default" )
+          echo "Requesting Bearer Token .... "
+          response=$(curl -s -X POST "https://staging.uipath.com/identity_/connect/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            --data-urlencode "grant_type=client_credentials" \
+            --data-urlencode "client_id=$UIPATH_CLIENT_ID" \
+            --data-urlencode "client_secret=$UIPATH_CLIENT_SECRET" \
+            --data-urlencode "scope=TM.Default")
 
           echo "Response: $response"
           token=$(echo "$response" | jq -r '.access_token')
