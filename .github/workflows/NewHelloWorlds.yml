@@ -96,7 +96,7 @@ jobs:
           if [ "$execution_id" = "null" ] || [ -z "$execution_id" ]; then
            echo "Failed to start execution"
           exit 1
-          fi"
+          fi
           
           # Set output for later steps
           echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
