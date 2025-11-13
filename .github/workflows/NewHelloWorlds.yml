@@ -87,7 +87,7 @@ jobs:
           echo "Using token: ${TOKEN:0:20}..." # shows only first 20 chars (for debug)
           echo "TOKEN LENGTH: ${#TOKEN}"
 
-          echo"Building URL as ${UIPATH_BASE_URL}${$UIPATH_PROJECT_ID}"
+          echo "Building URL as ${UIPATH_BASE_URL}${$UIPATH_PROJECT_ID}"
           
           response=$(curl -v -s -X POST \
             "${UIPATH_BASE_URL}${UIPATH_PROJECT_ID}/testsets/${UIPATH_TESTSET_ID}/startexecute?executionType=automated" \
