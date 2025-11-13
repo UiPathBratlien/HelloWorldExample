@@ -18,6 +18,8 @@ jobs:
       UIPATH_CLIENT_ID: ${{ secrets.UIPATH_CLIENT_ID }}
       UIPATH_CLIENT_SECRET: ${{ secrets.UIPATH_CLIENT_SECRET }}
       UIPATH_Token_URL: "https://staging.uipath.com/identity_/connect/token"
+      UIPATH_PROJECT_ID: "5a434247-ff97-0000-7cd1-0b48e6294a04"
+      UIPATH_TESTSET_ID: "c8b74974-29d3-0200-f250-0b48e6bbdcbc"
       UIPATH_BASE_URL: "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/"
     # The steps for the job
     steps:
@@ -55,7 +57,7 @@ jobs:
           echo "Using $UIPATH_Token_URL"
           
           # Use --data-urlencode to avoid bash parsing issues with special chars
-          response=$(curl -s -X POST "https://staging.uipath.com/identity_/connect/token" \
+          response=$(curl -s -X POST "$UIPATH_Token_URL" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data-urlencode "grant_type=client_credentials" \
             --data-urlencode "client_id=$UIPATH_CLIENT_ID" \
@@ -86,7 +88,7 @@ jobs:
           echo "TOKEN LENGTH: ${#TOKEN}"
           
           response=$(curl -v -s -X POST \
-            "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testsets/c8b74974-29d3-0200-f250-0b48e6bbdcbc/startexecute?executionType=automated" \
+            "$UIPATH_BASE_URL 5a434247-ff97-0000-7cd1-0b48e6294a04/testsets/c8b74974-29d3-0200-f250-0b48e6bbdcbc/startexecute?executionType=automated" \
             -H "accept: application/json" \
             -H "Authorization: Bearer $TOKEN")
           
