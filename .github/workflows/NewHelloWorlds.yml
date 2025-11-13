@@ -29,7 +29,7 @@ jobs:
 
       # Step 2: Prints a second message
       - name: My second step
-        run: echo "This is my simple GitHub Action."
+        run: echo "This is my simple GitHub Action That may build some code for delivery."
       
       # Step 3: Debug  
       - name: Debug secret presence
