@@ -105,7 +105,7 @@ jobs:
       - name: ⏱️ Wait for Test Execution to Complete
         env:
           TOKEN: ${{ steps.get_token.outputs.token }}
-          EXECUTION_ID: ${{ steps.start_execution.outputs.execution_id }}
+          EXECUTION_ID: ${{ steps.Trigger_TS_Exec.outputs.execution_id }}
         run: |
           echo "Waiting for test execution $EXECUTION_ID to complete..."
 
