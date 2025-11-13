@@ -83,11 +83,8 @@ jobs:
         run: |
           TOKEN="${{ steps.get_token.outputs.token }}"
           echo "Triggering Test Set Execution..."
-          echo "Using token: ${UIPATH_TOKEN:0:20}..." # shows only first 20 chars (for debug)
-          echo "Using token: ${TOKEN:0:20}..." # shows only first 20 chars (for debug)
+          #echo "Using token: ${UIPATH_TOKEN:0:20}..." # shows only first 20 chars (for debug)
           echo "TOKEN LENGTH: ${#TOKEN}"
-
-          echo "Building URL as ${UIPATH_BASE_URL}"
           
           response=$(curl -v -s -X POST \
             "${UIPATH_BASE_URL}${UIPATH_PROJECT_ID}/testsets/${UIPATH_TESTSET_ID}/startexecute?executionType=automated" \
@@ -116,7 +113,7 @@ jobs:
           # Max wait = 30 min (60 checks * 30s)
           for i in {1..60}; do
             status_response=$(curl -s -X GET \
-             "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/5a434247-ff97-0000-7cd1-0b48e6294a04/testexecutions/$EXECUTION_ID/withstats" \
+             "${UIPATH_BASE_URL}${UIPATH_PROJECT_ID}/testexecutions/$EXECUTION_ID/withstats" \
               -H "accept: application/json" \
               -H "Authorization: Bearer $TOKEN")
 
