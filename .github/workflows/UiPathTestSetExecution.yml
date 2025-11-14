@@ -25,11 +25,11 @@ jobs:
     steps:
       # Step 1: Prints a message to the console
       - name: My first step
-        run: echo "Hello World from Bratlien!"
+        run: echo "Hello World from UiPath_Bratlien!"
 
       # Step 2: Prints a second message
       - name: My second step
-        run: echo "This is my simple GitHub Action That may build some code for delivery."
+        run: echo "This is my simple GitHub Action that calls a Test Manager Test Set for execution waits for all test to execute before ending"
       
       # Step 3: Debug  
       - name: Debug secret presence
