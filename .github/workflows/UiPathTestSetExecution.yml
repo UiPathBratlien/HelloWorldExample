@@ -11,7 +11,7 @@ on:
 # Defines a series of jobs to run
 jobs:
   # The ID for the job, in this case, 'my-job'
-  my-job:
+  Run_UiPath_Tests:
     # Specifies the type of virtual machine to run the job on
     runs-on: ubuntu-latest
     env:
