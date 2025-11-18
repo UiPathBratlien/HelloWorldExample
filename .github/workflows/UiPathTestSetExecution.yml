@@ -25,7 +25,7 @@ jobs:
     steps:
       # Step 1: Prints a message to the console
       - name: My first step
-        run: echo "Hello World from UiPath_Bratlien!"
+        run: echo "Hello World from UiPath_Bratlien! "
 
       # Step 2: Prints a second message
       - name: My second step
