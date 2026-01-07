@@ -1,5 +1,5 @@
 # Name of the workflow as it appears in the Actions tab
-name: Hello World
+name: Run UiPath TestSet
 
 # Specifies when the workflow should run
 on:
