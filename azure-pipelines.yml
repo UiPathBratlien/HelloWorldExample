@@ -21,6 +21,6 @@ steps:
     testSet: 'BRATLIEN:19'
     testReportDestination: '$(Build.ArtifactStagingDirectory)\testmanager-results.xml'
     traceLevel: 'Verbose'
-    attachRobotLogs: true
+    #attachRobotLogs: true
 
 
