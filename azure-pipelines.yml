@@ -18,7 +18,8 @@ steps:
     testTarget: 'TestSet'
     orchestratorConnection: 'Bratlien Test Cloud'
     projectKey: 'Bratlien'
-    testSet: 'TS-19'
+    testSet: 'BRATLIEN:19'
+    testReportDestination: '$(Build.ArtifactStagingDirectory)\testmanager-results.xml'
     traceLevel: 'Verbose'
     attachRobotLogs: true
 
