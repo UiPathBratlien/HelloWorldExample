@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 steps:
 - script: echo Hello, world!
@@ -24,6 +24,5 @@ steps:
     testSet: 'TS-19'
     traceLevel: 'Verbose'
     attachRobotLogs: true
-  displayName: 'Run a multi-line script'
 
 
