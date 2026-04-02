@@ -18,8 +18,10 @@ jobs:
       UIPATH_CLIENT_ID: ${{ secrets.UIPATH_CLIENT_ID }}
       UIPATH_CLIENT_SECRET: ${{ secrets.UIPATH_CLIENT_SECRET }}
       UIPATH_Token_URL: "https://staging.uipath.com/identity_/connect/token"
-      UIPATH_PROJECT_ID: "5a434247-ff97-0000-7cd1-0b48e6294a04"
-      UIPATH_TESTSET_ID: "c8b74974-29d3-0200-f250-0b48e6bbdcbc"
+      #UIPATH_PROJECT_ID: "5a434247-ff97-0000-7cd1-0b48e6294a04"
+      UIPATH_PROJECT_ID: "76d2f9f5-0fa9-0000-4e2e-0b49741de36f"
+      #UIPATH_TESTSET_ID: "c8b74974-29d3-0200-f250-0b48e6bbdcbc"
+      UIPATH_TESTSET_ID: "2e4b66d1-6025-0300-d75b-0b49757d6a7f"
       UIPATH_BASE_URL: "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/"
     # The steps for the job
     steps:
