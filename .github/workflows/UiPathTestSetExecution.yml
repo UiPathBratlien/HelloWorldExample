@@ -123,7 +123,7 @@ jobs:
             status=$(echo "$status_response" | jq -r '.status')
             echo "Status check #$i → $status"
 
-            if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Finished" ]]; then
+            if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Finished" || "$status" == "Cancelled" ]]; then
               echo "✅ Execution finished with status: $status"
               PassedTC=$(echo "$status_response" | jq -r '.passed')
               FailedTC=$(echo "$status_response" | jq -r '.failed')
