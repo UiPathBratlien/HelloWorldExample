@@ -1,4 +1,4 @@
-# Name of the workflow as it appears in the Actions tab dad
+# Name of the workflow as it appears in the Actions tab dad name
 name: Run UiPath TestSet
 
 # Specifies when the workflow should run
