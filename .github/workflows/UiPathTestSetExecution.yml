@@ -220,3 +220,130 @@ jobs:
           exit 1
 
         
+
+  # Job 4: Run a single test case (BBLP:1276) from Test Manager
+  Run_Single_Test_Case:
+    # Runs after the app is built/deployed, side by side with the Test Set job
+    needs: [Build_App, Deploy_App]
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    env:
+      UIPATH_Token_URL: "https://staging.uipath.com/identity_/connect/token"
+      # BBLP project
+      UIPATH_PROJECT_ID: "fe5ec51b-b2d2-0000-1202-0b49cc6b4fc4"
+      UIPATH_BASE_URL: "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/"
+      # The test case to run (its key as shown in Test Manager)
+      UIPATH_TEST_CASE_KEY: "BBLP:1276"
+      # Optional: Orchestrator folder key, only needed if the test case's automation lives in a specific folder
+      UIPATH_FOLDER_KEY: ""
+    steps:
+      # Step 1: Get a token
+      - name: get_token
+        id: get_token
+        env:
+          UIPATH_CLIENT_ID: ${{ secrets.UIPATH_CLIENT_ID }}
+          UIPATH_CLIENT_SECRET: ${{ secrets.UIPATH_CLIENT_SECRET }}
+        run: |
+          get_token() {
+            curl -s -X POST "$UIPATH_Token_URL" \
+              -H "Content-Type: application/x-www-form-urlencoded" \
+              --data-urlencode "grant_type=client_credentials" \
+              --data-urlencode "client_id=$UIPATH_CLIENT_ID" \
+              --data-urlencode "client_secret=$UIPATH_CLIENT_SECRET" \
+              --data-urlencode "scope=$1" | jq -r '.access_token'
+          }
+          # Looking up a test case may need the TM.TestCases scope.
+          # If your external app doesn't have it, fall back to the scopes the Test Set job uses.
+          token=$(get_token "TM.Default TM.TestExecutions TM.TestSets TM.TestCases")
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "⚠️ Token with TM.TestCases scope failed, retrying without it"
+            token=$(get_token "TM.Default TM.TestExecutions TM.TestSets")
+          fi
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "❌ Failed to get bearer token"
+            exit 1
+          fi
+          echo "::add-mask::$token"
+          echo "✅ Token retrieved"
+          echo "token=$token" >> $GITHUB_OUTPUT
+
+      # Step 2: Turn the test case key (BBLP:1276) into its internal ID
+      - name: Look up test case
+        id: lookup
+        env:
+          TOKEN: ${{ steps.get_token.outputs.token }}
+        run: |
+          key_encoded=$(jq -rn --arg k "$UIPATH_TEST_CASE_KEY" '$k|@uri')
+          response=$(curl -s -w "\n%{http_code}" -X GET \
+            "${UIPATH_BASE_URL}${UIPATH_PROJECT_ID}/testcases/objkey/${key_encoded}" \
+            -H "accept: application/json" \
+            -H "Authorization: Bearer $TOKEN")
+          code=$(echo "$response" | tail -n1); body=$(echo "$response" | sed '$d')
+          echo "HTTP $code"
+          test_case_id=$(echo "$body" | jq -r '.id // empty')
+          if [ "$code" != "200" ] || [ -z "$test_case_id" ]; then
+            echo "❌ Could not find test case $UIPATH_TEST_CASE_KEY"
+            echo "$body"
+            exit 1
+          fi
+          echo "✅ $UIPATH_TEST_CASE_KEY → $test_case_id ($(echo "$body" | jq -r '.name'))"
+          echo "test_case_id=$test_case_id" >> $GITHUB_OUTPUT
+
+      # Step 3: Start the test case
+      - name: Start test case execution
+        id: start
+        env:
+          TOKEN: ${{ steps.get_token.outputs.token }}
+          TEST_CASE_ID: ${{ steps.lookup.outputs.test_case_id }}
+        run: |
+          body=$(jq -n --arg name "GitHub run ${GITHUB_RUN_NUMBER} - ${UIPATH_TEST_CASE_KEY}" \
+                       --arg id "$TEST_CASE_ID" --arg folder "$UIPATH_FOLDER_KEY" \
+                       '{Name: $name, TestCaseIds: [$id]} + (if $folder != "" then {folderKey: $folder} else {} end)')
+          echo "Request: $body"
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            "${UIPATH_BASE_URL}${UIPATH_PROJECT_ID}/testcases/startexecute?executionType=automated" \
+            -H "accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -d "$body")
+          code=$(echo "$response" | tail -n1); resp=$(echo "$response" | sed '$d')
+          echo "HTTP $code"
+          echo "Response: $resp"
+          execution_id=$(echo "$resp" | jq -r '.id // empty')
+          if [ -z "$execution_id" ]; then
+            echo "❌ Failed to start test case execution"
+            exit 1
+          fi
+          echo "✅ Started execution $execution_id"
+          echo "execution_id=$execution_id" >> $GITHUB_OUTPUT
+
+      # Step 4: Wait for it to finish
+      - name: ⏱️ Wait for test case to complete
+        env:
+          TOKEN: ${{ steps.get_token.outputs.token }}
+          EXECUTION_ID: ${{ steps.start.outputs.execution_id }}
+        run: |
+          # Max wait = 30 min (60 checks * 30s)
+          for i in {1..60}; do
+            status_response=$(curl -s -X GET \
+              "${UIPATH_BASE_URL}${UIPATH_PROJECT_ID}/testexecutions/$EXECUTION_ID/withstats" \
+              -H "accept: application/json" \
+              -H "Authorization: Bearer $TOKEN")
+            status=$(echo "$status_response" | jq -r '.status')
+            echo "Status check #$i → $status"
+
+            if [[ "$status" == "Passed" || "$status" == "Failed" || "$status" == "Finished" || "$status" == "Cancelled" ]]; then
+              passed=$(echo "$status_response" | jq -r '.passed')
+              failed=$(echo "$status_response" | jq -r '.failed')
+              echo "Execution finished with status: $status (passed: $passed, failed: $failed)"
+              if [[ "$status" == "Cancelled" || "$failed" != "0" ]]; then
+                echo "❌ Test case $UIPATH_TEST_CASE_KEY did not pass"
+                exit 1
+              fi
+              echo "✅ Test case $UIPATH_TEST_CASE_KEY passed"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "❌ Timed out waiting for test case execution"
+          exit 1
