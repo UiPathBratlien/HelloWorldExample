@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UiBank-Loan Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --orange:#fa4616; --orange-light:#fb6a3f; --bg:#f4f5f9; --text:#1a1a1a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Poppins, sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+  a { color:inherit; }
+  header { background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.06); }
+  .bar { max-width:1060px; margin:0 auto; padding:16px; display:flex; align-items:center; justify-content:space-between; }
+  .logo { font-size:30px; font-weight:700; text-decoration:none; letter-spacing:-1px; }
+  .logo span { color:var(--orange); }
+  nav { display:flex; gap:16px; align-items:center; position:relative; }
+  nav a { text-decoration:none; font-size:15px; cursor:pointer; }
+  .menu { display:none; position:absolute; top:28px; left:-10px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.12); border-radius:4px; padding:6px 0; min-width:160px; z-index:5; }
+  .menu.open { display:block; }
+  .menu a { display:block; padding:6px 16px; }
+  .menu a:hover { background:var(--bg); }
+  main { flex:1; padding:50px 16px; }
+  .panel { position:relative; overflow:hidden; max-width:1000px; margin:0 auto; background:var(--orange); color:#fff; padding:60px 24px; text-align:center; min-height:386px; }
+  .panel::before, .panel::after { content:""; position:absolute; border-radius:50%; border:110px solid var(--orange-light); }
+  .panel::before { width:560px; height:560px; left:-290px; bottom:-380px; }
+  .panel::after { width:620px; height:620px; right:-300px; top:-390px; }
+  .dot { position:absolute; border-radius:50%; background:var(--orange-light); }
+  .content { position:relative; z-index:1; max-width:440px; margin:0 auto; }
+  .wide { max-width:600px; }
+  h1 { font-size:40px; line-height:1.25; margin:0 0 8px; font-weight:600; }
+  p.sub { margin:0 0 40px; font-size:14px; }
+  .btn { font-family:inherit; font-weight:600; font-size:14px; padding:10px 18px; cursor:pointer; border:2px solid #fff; }
+  .btn-white { background:#fff; color:#000; }
+  .btn-outline { background:transparent; color:#fff; }
+  .btns { display:flex; gap:32px; justify-content:center; flex-wrap:wrap; }
+  .back { position:absolute; left:16px; top:14px; z-index:2; font-size:13px; text-decoration:none; cursor:pointer; }
+  form { text-align:left; }
+  label { display:block; font-size:10px; margin:14px 0 4px; }
+  input, select { width:100%; font-family:inherit; font-size:13px; padding:11px 10px; border:1px solid #333; background:#fff; }
+  .err { font-size:11px; color:#fff; background:rgba(0,0,0,.25); padding:2px 6px; margin-top:4px; display:none; }
+  .err.show { display:block; }
+  .center { text-align:center; margin-top:28px; }
+  table { width:100%; border-collapse:collapse; background:#fff; color:#000; text-align:left; font-size:14px; }
+  td { padding:10px 14px; border-bottom:1px solid #eee; }
+  td:first-child { font-weight:600; width:45%; }
+  .status { font-size:22px; font-weight:600; margin:10px 0 20px; }
+  .view { display:none; } .view.active { display:block; }
+  footer { background:#fff; }
+  footer .bar { font-size:10px; gap:16px; flex-wrap:wrap; }
+  footer .ver { color:#ccc; text-align:center; }
+  footer .links { text-align:center; font-size:14px; }
+  footer .links a { display:block; color:#1c6dd0; }
+  @media (max-width:600px) { h1 { font-size:28px; } .btns { gap:14px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <a class="logo" href="#/loans"><span>Ui</span>Bank</a>
+    <nav>
+      <a id="dropdownMenuLink" onclick="document.getElementById('menu').classList.toggle('open')">Products &#9662;</a>
+      <div class="menu" id="menu">
+        <a href="#/loans">Loans</a>
+        <a onclick="alertDemo()">Credit Cards</a>
+        <a onclick="alertDemo()">Mobile Banking</a>
+      </div>
+      <a onclick="alertDemo()">Login</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- Home -->
+  <section class="view" id="view-home" data-title="UiBank-Loan Home">
+    <div class="panel">
+      <div class="dot" style="width:130px;height:130px;left:265px;top:36px"></div>
+      <div class="dot" style="width:130px;height:130px;right:182px;top:225px"></div>
+      <div class="content wide" style="padding-top:20px">
+        <h1>Financing for what ever life throws at you!</h1>
+        <p class="sub">Use our loan calculator to see if you qualify for a loan with UiBank</p>
+        <div class="btns">
+          <button class="btn btn-white" id="applyButton" type="submit" onclick="go('/loans/apply')">Apply For A Loan</button>
+          <button class="btn btn-outline" id="existingButton" type="submit" onclick="go('/loans/lookup')">Already Have A Loan?</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Apply -->
+  <section class="view" id="view-apply" data-title="UiBank-Loan Apply">
+    <div class="panel">
+      <a class="back" onclick="go('/loans')">&lt; Back</a>
+      <div class="content">
+        <h1>Loan application</h1>
+        <p class="sub" style="margin-bottom:10px">Fill in the details below in order to proceed with loan application.</p>
+        <form id="loanForm" novalidate>
+          <label for="email">Email Address of Requester</label>
+          <input id="email" name="email" type="email" placeholder="Enter email address">
+          <div class="err" id="email-err">Please enter a valid email address.</div>
+
+          <label for="amount">Loan Amount Requested</label>
+          <input id="amount" name="amount" type="number" placeholder="Enter loan amount you are looking for">
+          <div class="err" id="amount-err">Please enter a loan amount greater than 0.</div>
+
+          <label for="term">Loan Term</label>
+          <select id="term" name="term" required>
+            <option value="">Select your loan term</option>
+            <option value="1">1</option><option value="3">3</option>
+            <option value="5">5</option><option value="10">10</option>
+          </select>
+          <div class="err" id="term-err">Please select a loan term.</div>
+
+          <label for="income">Current Yearly Income (Before Taxes)</label>
+          <input id="income" name="income" type="number" placeholder="How much do you make before taxes a year?">
+          <div class="err" id="income-err">Please enter your yearly income.</div>
+
+          <label for="age">Age</label>
+          <input id="age" name="age" type="number" placeholder="Please enter your age">
+          <div class="err" id="age-err">Please enter your age.</div>
+
+          <div class="center"><button class="btn btn-white" id="submitButton" type="submit">Submit Loan Application</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <section class="view" id="view-result" data-title="UiBank-Loan Result">
+    <div class="panel">
+      <a class="back" onclick="go('/loans')">&lt; Back</a>
+      <div class="content wide">
+        <h1>Loan Application Results</h1>
+        <div class="status" id="loanStatus"></div>
+        <table id="resultTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lookup -->
+  <section class="view" id="view-lookup" data-title="UiBank-Loan Lookup">
+    <div class="panel">
+      <a class="back" onclick="go('/loans')">&lt; Back</a>
+      <div class="content">
+        <h1>Loan Lookup</h1>
+        <p class="sub">Already have a loan? Enter in your loan ID, to retrieve the details!</p>
+        <form id="lookupForm" novalidate>
+          <label for="quoteID" style="font-size:13px">Loan ID:</label>
+          <input id="quoteID" name="quoteID" type="text" placeholder="Enter loan ID here">
+          <div class="err" id="quoteID-err">No loan found with that ID.</div>
+          <div class="center"><button class="btn btn-white" id="lookupButton" type="submit">Retrieve Loan Details</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="bar">
+    <a class="logo" href="#/loans"><span>Ui</span>Bank</a>
+    <div>
+      <div class="ver" id="buildInfo">UiBank demo copy</div>
+      <div>Demo copy of the UiBank loan pages, built for test automation practice only. Not a real bank.</div>
+    </div>
+    <div class="links"><a href="#/loans/apply">Need a Loan?</a><a onclick="alertDemo()">Contact Us</a></div>
+  </div>
+</footer>
+
+<script>
+  // Simple page switching using the part of the address after "#"
+  const routes = { '/loans':'home', '/loans/apply':'apply', '/loans/result':'result', '/loans/lookup':'lookup' };
+  function go(path) { location.hash = '#' + path; }
+  function alertDemo() { console.log('Not part of this demo copy'); }
+  function show() {
+    const path = location.hash.replace('#','').split('?')[0] || '/loans';
+    const name = routes[path] || 'home';
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const view = document.getElementById('view-' + name);
+    view.classList.add('active');
+    document.title = view.dataset.title;
+    document.getElementById('menu').classList.remove('open');
+    if (name === 'result') renderResult(new URLSearchParams(location.hash.split('?')[1]).get('id'));
+  }
+  window.addEventListener('hashchange', show);
+
+  // Saved loans live in this browser only
+  function loadLoans() { try { return JSON.parse(localStorage.getItem('uibankLoans') || '{}'); } catch { return {}; } }
+  function saveLoan(l) { try { const all = loadLoans(); all[l.id] = l; localStorage.setItem('uibankLoans', JSON.stringify(all)); } catch {} }
+
+  function setErr(id, bad) { document.getElementById(id + '-err').classList.toggle('show', bad); return bad; }
+  const money = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+
+  document.getElementById('loanForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = id => document.getElementById(id).value.trim();
+    const email = f('email'), amount = +f('amount'), term = +f('term'), income = +f('income'), age = +f('age');
+    let bad = false;
+    bad = setErr('email', !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) || bad;
+    bad = setErr('amount', !(amount > 0)) || bad;
+    bad = setErr('term', !term) || bad;
+    bad = setErr('income', !(income >= 0) || f('income') === '') || bad;
+    bad = setErr('age', !(age > 0)) || bad;
+    if (bad) return;
+
+    // Made-up demo rule: approve if 18+ and the yearly repayment is no more than 40% of yearly income
+    const rate = term <= 3 ? 6.5 : term <= 5 ? 7.5 : 8.5;
+    const monthly = (amount * (rate/1200)) / (1 - Math.pow(1 + rate/1200, -term*12));
+    const approved = age >= 18 && monthly * 12 <= income * 0.4;
+    const loan = { id: 'L' + Date.now().toString(36).toUpperCase(), email, amount, term, income, age,
+                   approved, rate: approved ? rate : null, monthly: approved ? monthly : null };
+    saveLoan(loan);
+    e.target.reset();
+    go('/loans/result?id=' + loan.id);
+  });
+
+  document.getElementById('lookupForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('quoteID').value.trim().toUpperCase();
+    if (setErr('quoteID', !loadLoans()[id])) return;
+    go('/loans/result?id=' + id);
+  });
+
+  function renderResult(id) {
+    const l = loadLoans()[id];
+    const status = document.getElementById('loanStatus'), table = document.getElementById('resultTable');
+    if (!l) { status.textContent = 'Loan not found'; table.innerHTML = ''; return; }
+    status.textContent = l.approved ? 'Approved' : 'Denied';
+    const rows = [['Loan ID', l.id], ['Email', l.email], ['Loan Amount', money(l.amount)], ['Loan Term', l.term + ' years'],
+                  ['Yearly Income', money(l.income)], ['Age', l.age], ['Status', l.approved ? 'Approved' : 'Denied']];
+    if (l.approved) rows.push(['Interest Rate', l.rate + '%'], ['Monthly Payment', money(l.monthly)]);
+    const slug = k => 'result' + k.replace(/\s/g, '');
+    table.innerHTML = rows.map(([k]) => `<tr><td>${k}</td><td id="${slug(k)}"></td></tr>`).join('');
+    rows.forEach(([k, v]) => document.getElementById(slug(k)).textContent = v);
+  }
+
+  // Hide a field's error message as soon as the user changes that field
+  document.querySelectorAll('input, select').forEach(el =>
+    el.addEventListener('input', () => { const e = document.getElementById(el.id + '-err'); if (e) e.classList.remove('show'); }));
+
+  show();
+</script>
+</body>
+</html>
