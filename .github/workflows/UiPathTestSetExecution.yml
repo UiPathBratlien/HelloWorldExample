@@ -8,13 +8,94 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Permissions needed so the workflow can publish to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deployment at a time
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 # Defines a series of jobs to run
 jobs:
+  # Job 1: Build a simple "Hello World" web app
+  Build_App:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Build the web app
+        run: |
+          mkdir -p dist
+          cat > dist/index.html <<HTML
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Hello World</title>
+          </head>
+          <body>
+            <h1 id="greeting">Hello World from UiPath_Bratlien!</h1>
+            <p id="build-info">Build ${GITHUB_RUN_NUMBER} - commit ${GITHUB_SHA::7} - $(date -u +"%Y-%m-%d %H:%M UTC")</p>
+          </body>
+          </html>
+          HTML
+          echo "✅ Built dist/index.html"
+          cat dist/index.html
+
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the built app
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  # Job 2: Deploy the app to GitHub Pages (main branch only)
+  Deploy_App:
+    needs: Build_App
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      app_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Check the app is live
+        run: |
+          url="${{ steps.deployment.outputs.page_url }}"
+          echo "Checking $url ..."
+          for i in {1..10}; do
+            if curl -sf "$url" | grep -q "Hello World"; then
+              echo "✅ App is live at $url"
+              exit 0
+            fi
+            echo "⏳ Not live yet, waiting 10s..."
+            sleep 10
+          done
+          echo "❌ App did not come up at $url"
+          exit 1
+
   # The ID for the job, in this case, 'my-job'
+  # Job 3: Run the UiPath Test Set against the deployed app
   Run_UiPath_Tests:
+    # Wait for the app to be built and deployed first.
+    # On non-main branches Deploy_App is skipped, so tests still run after the build.
+    needs: [Build_App, Deploy_App]
+    if: ${{ !failure() && !cancelled() }}
     # Specifies the type of virtual machine to run the job on
     runs-on: ubuntu-latest
     env:
+      APP_URL: ${{ needs.Deploy_App.outputs.app_url }}
       UIPATH_CLIENT_ID: ${{ secrets.UIPATH_CLIENT_ID }}
       UIPATH_CLIENT_SECRET: ${{ secrets.UIPATH_CLIENT_SECRET }}
       UIPATH_Token_URL: "https://staging.uipath.com/identity_/connect/token"
@@ -27,7 +108,9 @@ jobs:
     steps:
       # Step 1: Prints a message to the console
       - name: My first step
-        run: echo "Hello World from UiPath_Bratlien! "
+        run: |
+          echo "Hello World from UiPath_Bratlien! "
+          echo "App under test: ${APP_URL:-not deployed on this branch}"
 
       # Step 2: Prints a second message
       - name: My second step
