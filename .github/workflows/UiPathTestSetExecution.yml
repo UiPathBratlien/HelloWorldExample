@@ -234,10 +234,12 @@ jobs:
     env:
       UIPATH_Token_URL: "https://staging.uipath.com/identity_/connect/token"
       # BBLP project
-      UIPATH_PROJECT_ID: "fe5ec51b-b2d2-0000-1202-0b49cc6b4fc4"
+      #UIPATH_PROJECT_ID: "fe5ec51b-b2d2-0000-1202-0b49cc6b4fc4"
+      # BNJ Project
+      UIPATH_PROJECT_ID: "43143bac-5e2d-0800-f707-0b4a5bb5b5c3"
       UIPATH_BASE_URL: "https://staging.uipath.com/uipathlabstestcloud/Playground/testmanager_/api/v2/"
       # The test case to run (its key as shown in Test Manager)
-      UIPATH_TEST_CASE_KEY: "BBLP:1276"
+      UIPATH_TEST_CASE_KEY: "BNJ:4"
       # Optional: Orchestrator folder key, only needed if the test case's automation lives in a specific folder
       UIPATH_FOLDER_KEY: ""
     steps:
