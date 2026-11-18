@@ -94,7 +94,7 @@ jobs:
       #UIPATH_PROJECT_ID: "5a434247-ff97-0000-7cd1-0b48e6294a04"
       #UIPATH_PROJECT_ID: "76d2f9f5-0fa9-0000-4e2e-0b49741de36f"
       #BBLP Project below
-      UIPATH_PROJECT_ID: "fe5ec51b-b2d2-0000-1202-0b49cc6b4fc4"
+      #UIPATH_PROJECT_ID: "fe5ec51b-b2d2-0000-1202-0b49cc6b4fc4"
       # BNJ
       UIPATH_PROJECT_ID: "43143bac-5e2d-0800-f707-0b4a5bb5b5c3"
       #UIPATH_TESTSET_ID: "c8b74974-29d3-0200-f250-0b48e6bbdcbc"
